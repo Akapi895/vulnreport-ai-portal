@@ -1,0 +1,26 @@
+[
+  {
+    "service_name": "backend-api",
+    "service_type": "api",
+    "version": "FastAPI 0.115",
+    "host": "backend-api",
+    "port": 8000,
+    "status": "running",
+    "runtime_metadata": {
+      "env": "staging",
+      "config_path": "/app/.env"
+    }
+  },
+  {
+    "service_name": "postgres",
+    "service_type": "database",
+    "version": "PostgreSQL 16",
+    "host": "postgres",
+    "port": 5432,
+    "status": "running",
+    "runtime_metadata": {
+      "env": "staging",
+      "exposed_port": 5432
+    }
+  }
+]
