@@ -10,6 +10,13 @@ services:
       - backend-api
       - llm-gateway
       - mcp-server
+      - frontend
+
+  frontend:
+    build: ./frontend
+    restart: unless-stopped
+    depends_on:
+      - backend-api
 
   backend-api:
     build: ./backend
