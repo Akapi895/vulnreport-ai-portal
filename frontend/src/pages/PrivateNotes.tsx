@@ -8,13 +8,11 @@ export default function PrivateNotes() {
   const [notes, setNotes] = useState<PrivateNote[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Note Creation State
   const [noteTitle, setNoteTitle] = useState('');
   const [noteContent, setNoteContent] = useState('');
   const [createError, setCreateError] = useState('');
   const [createSuccess, setCreateSuccess] = useState(false);
 
-  // IDOR POC Exploit State (Red Mode)
   const [pocNoteId, setPocNoteId] = useState('1');
   const [pocResult, setPocResult] = useState<PrivateNote | null>(null);
   const [pocError, setPocError] = useState('');
@@ -75,7 +73,6 @@ export default function PrivateNotes() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', height: '100%', overflowY: 'auto' }}>
       
-      {/* Page Title */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexShrink: 0 }}>
         <h2 style={{ fontSize: '18px', fontFamily: 'var(--font-display)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <StickyNote size={20} style={{ color: 'var(--accent)' }} /> SECURE REMEDIATION PRIVATE NOTES
@@ -87,7 +84,6 @@ export default function PrivateNotes() {
 
       <div style={{ display: 'grid', gridTemplateColumns: theme === 'red' ? '1.2fr 1fr 1fr' : '1.5fr 1fr', gap: '1.25rem', flex: 1, minHeight: 0 }}>
         
-        {/* Column 1: List of Notes */}
         <div className="cyber-card" style={{ display: 'flex', flexDirection: 'column', padding: '1rem', overflow: 'hidden' }}>
           <h3 style={{ fontSize: '13px', fontFamily: 'var(--font-mono)', color: 'var(--accent)', borderBottom: '1px solid var(--border)', paddingBottom: '0.5rem', marginBottom: '1rem' }}>
             MY PRIVATE NOTES
@@ -124,7 +120,6 @@ export default function PrivateNotes() {
           </div>
         </div>
 
-        {/* Column 2: Create Note Form */}
         <div className="cyber-card" style={{ padding: '1rem', height: 'fit-content' }}>
           <h3 style={{ fontSize: '13px', fontFamily: 'var(--font-mono)', color: 'var(--accent)', borderBottom: '1px solid var(--border)', paddingBottom: '0.5rem', marginBottom: '1rem' }}>
             CREATE NEW SECURE NOTE
@@ -174,7 +169,6 @@ export default function PrivateNotes() {
           </form>
         </div>
 
-        {/* Column 3: Red Mode IDOR Exploiter POC */}
         {theme === 'red' && (
           <div className="cyber-card" style={{ padding: '1rem', border: '1px solid var(--danger)', backgroundColor: 'rgba(239, 68, 68, 0.02)' }}>
             <h3 style={{ fontSize: '13px', fontFamily: 'var(--font-mono)', color: 'var(--danger)', borderBottom: '1px solid var(--danger)', paddingBottom: '0.5rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -238,7 +232,6 @@ export default function PrivateNotes() {
               </div>
             )}
 
-            {/* Quick Helper hint */}
             {!pocResult && !pocError && (
               <div style={{ 
                 fontSize: '10px', 

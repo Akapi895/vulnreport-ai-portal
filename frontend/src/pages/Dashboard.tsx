@@ -21,16 +21,13 @@ export default function Dashboard({ user }: DashboardProps) {
   const fetchDashboardData = async () => {
     setLoading(true);
     try {
-      // Fetch public/user reports
       const reportList = await api.reports.list();
       setReports(reportList);
 
-      // If user is admin, fetch actual lab status
       if (user.role === 'admin') {
         const statusData = await api.admin.getStatus();
         setLabStatus(statusData);
       } else {
-        // Mock stats or estimated stats for non-admin
         setLabStatus({
           lab_mode: true,
           users: 3,
@@ -45,7 +42,6 @@ export default function Dashboard({ user }: DashboardProps) {
     }
   };
 
-  // Node descriptions for the Interactive Network SVG Map
   const nodes: Record<string, { label: string; desc: string; exposed: boolean; detail: string; vuln?: string }> = {
     nginx: {
       label: 'NGINX (Reverse Proxy)',
@@ -93,7 +89,6 @@ export default function Dashboard({ user }: DashboardProps) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', height: '100%', overflowY: 'auto', paddingRight: '0.25rem' }}>
       
-      {/* Upper Grid - System Stats */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem' }}>
         
         <div className="cyber-card" style={{ padding: '1rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
@@ -167,10 +162,8 @@ export default function Dashboard({ user }: DashboardProps) {
 
       </div>
 
-      {/* Main Workspace - Attack Surface Map & Info */}
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 3fr) minmax(0, 2fr)', gap: '1rem' }}>
         
-        {/* Interactive SVG Network Map */}
         <div className="cyber-card" style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column' }}>
           <h3 style={{ 
             fontSize: '14px', 
@@ -197,7 +190,6 @@ export default function Dashboard({ user }: DashboardProps) {
                 </marker>
               </defs>
 
-              {/* Connections (Lines) */}
               <line x1="100" y1="200" x2="250" y2="100" stroke={theme === 'red' ? '#ef4444' : 'var(--border)'} strokeWidth="1.5" strokeDasharray="4" markerEnd={theme === 'red' ? 'url(#arrow-red)' : 'url(#arrow)'} />
               <line x1="100" y1="200" x2="250" y2="200" stroke="var(--border)" strokeWidth="1.5" markerEnd="url(#arrow)" />
               <line x1="100" y1="200" x2="250" y2="300" stroke={theme === 'red' ? '#ef4444' : 'var(--border)'} strokeWidth="1.5" strokeDasharray="4" markerEnd={theme === 'red' ? 'url(#arrow-red)' : 'url(#arrow)'} />
@@ -208,21 +200,16 @@ export default function Dashboard({ user }: DashboardProps) {
 
               <line x1="650" y1="300" x2="650" y2="100" stroke={theme === 'red' ? '#ef4444' : 'var(--border)'} strokeWidth="1.5" strokeDasharray="3" />
 
-              {/* Red mode special: External Attacker to Postgres directly */}
               {theme === 'red' && (
                 <path d="M 80,380 C 100,340 180,310 250,300" fill="none" stroke="#ef4444" strokeWidth="2" strokeDasharray="5" markerEnd="url(#arrow-red)" />
               )}
 
-              {/* Nodes (Circles/Boxes) */}
-              
-              {/* WAN/Outside node */}
               <g transform="translate(100, 200)" cursor="pointer" onClick={() => setSelectedNode('nginx')}>
                 <circle r="30" fill="var(--bg-panel)" stroke="var(--accent)" strokeWidth="2" />
                 <text y="5" textAnchor="middle" fill="var(--text-main)" fontSize="10" fontFamily="var(--font-mono)">NGINX</text>
                 <text y="42" textAnchor="middle" fill="var(--text-muted)" fontSize="9" fontFamily="var(--font-mono)">Port 80/9001</text>
               </g>
 
-              {/* Exposed Ports status */}
               <g transform="translate(250, 100)" cursor="pointer" onClick={() => setSelectedNode('llm')}>
                 <rect x="-45" y="-22" width="90" height="44" rx="4" fill="var(--bg-panel)" stroke="var(--accent)" strokeWidth="1.5" />
                 <text y="4" textAnchor="middle" fill="var(--text-main)" fontSize="10" fontFamily="var(--font-mono)">LLM Gateway</text>
@@ -266,7 +253,6 @@ export default function Dashboard({ user }: DashboardProps) {
                 <text y="36" textAnchor="middle" fill="var(--text-muted)" fontSize="9" fontFamily="var(--font-mono)">Internal</text>
               </g>
 
-              {/* Hacker node in Red Theme */}
               {theme === 'red' && (
                 <g transform="translate(80, 380)">
                   <circle r="15" fill="#ef4444" />
@@ -281,10 +267,8 @@ export default function Dashboard({ user }: DashboardProps) {
           </p>
         </div>
 
-        {/* Sidebar Info - Node Inspector & Recent reports */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           
-          {/* Node Inspector Card */}
           <div className="cyber-card" style={{ padding: '1.25rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
             <h3 style={{ 
               fontSize: '13px', 
@@ -351,7 +335,6 @@ export default function Dashboard({ user }: DashboardProps) {
             )}
           </div>
 
-          {/* Recent CVE Reports */}
           <div className="cyber-card" style={{ padding: '1.25rem', height: '200px', display: 'flex', flexDirection: 'column' }}>
             <h3 style={{ 
               fontSize: '13px', 
@@ -406,7 +389,6 @@ export default function Dashboard({ user }: DashboardProps) {
 
       </div>
 
-      {/* Attack Paths Reference Table (Red mode only) */}
       {theme === 'red' && (
         <div className="cyber-card" style={{ padding: '1.25rem' }}>
           <h3 style={{ 

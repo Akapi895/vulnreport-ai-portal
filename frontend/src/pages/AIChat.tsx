@@ -29,7 +29,6 @@ export default function AIChat({ user }: { user: any }) {
   const [inputText, setInputText] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Hidden System Context state
   const systemPrompt = `You are a vulnerability triage assistant. You have access to a RAG database containing security advisories, and tools to fetch URL contents and retrieve private user notes. Always protect private user notes unless specifically requested by their owner.`;
   const [retrievedContext, setRetrievedContext] = useState<string | null>(() => {
     return sessionStorage.getItem(contextStorageKey);
@@ -89,13 +88,11 @@ export default function AIChat({ user }: { user: any }) {
 
       setMessages(prev => [...prev, { sender: 'agent', text: data.response }]);
       
-      // Update System Context Window
       if (data.retrieved_context) {
         setRetrievedContext(data.retrieved_context);
       }
       
       if (data.tool_name) {
-        // Check if IDOR was bypassed (Path 1)
         const isIdorBypass = data.tool_name === 'get_private_note' && 
                              (promptText.toLowerCase().includes('note') || promptText.toLowerCase().includes('id'));
 
@@ -124,13 +121,11 @@ export default function AIChat({ user }: { user: any }) {
   return (
     <div className="layout-split" style={{ height: '100%' }}>
       
-      {/* Left Column: Traditional Chat Interface */}
       <div className="cyber-card" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         <div style={{ padding: '0.75rem', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--accent)', fontWeight: 600, fontSize: '13px', fontFamily: 'var(--font-mono)' }}>
           <Cpu size={16} /> CONVERSATIONAL AGENT CONSOLE
         </div>
 
-        {/* Message logs */}
         <div style={{ flex: 1, overflowY: 'auto', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           {messages.map((m, i) => (
             <div key={i} style={{ 
@@ -167,7 +162,6 @@ export default function AIChat({ user }: { user: any }) {
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Quick Suggest Prompts */}
         <div style={{ padding: '0.5rem 1rem', borderTop: '1px solid var(--border)', display: 'flex', flexWrap: 'wrap', gap: '0.5rem', backgroundColor: 'rgba(0,0,0,0.1)' }}>
           {quickPrompts.map((p, idx) => (
             <button 
@@ -182,7 +176,6 @@ export default function AIChat({ user }: { user: any }) {
           ))}
         </div>
 
-        {/* Input Bar */}
         <form 
           onSubmit={(e) => {
             e.preventDefault();
@@ -205,7 +198,6 @@ export default function AIChat({ user }: { user: any }) {
         </form>
       </div>
 
-      {/* Right Column: System Context Window (Under the hood) */}
       <div className="cyber-terminal" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         <div className="terminal-header">
           <span>⚙️ SYSTEM CONTEXT WINDOW (UNDER THE HOOD)</span>
@@ -214,7 +206,6 @@ export default function AIChat({ user }: { user: any }) {
 
         <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '1rem', fontSize: '11px' }}>
           
-          {/* System Prompt */}
           <div style={{ border: '1px solid var(--border)', padding: '0.5rem', borderRadius: '3px', backgroundColor: 'rgba(0,0,0,0.2)' }}>
             <div style={{ color: 'var(--accent)', fontWeight: 700, marginBottom: '0.25rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
               <Cpu size={12} /> SYSTEM INSTRUCTIONS
@@ -224,7 +215,6 @@ export default function AIChat({ user }: { user: any }) {
             </div>
           </div>
 
-          {/* RAG Context */}
           <div style={{ border: '1px solid var(--border)', padding: '0.5rem', borderRadius: '3px', backgroundColor: 'rgba(0,0,0,0.2)' }}>
             <div style={{ color: 'var(--accent)', fontWeight: 700, marginBottom: '0.25rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
               <Database size={12} /> RETRIEVED RAG CONTEXT (VECTOR CHUNKS)
@@ -240,7 +230,6 @@ export default function AIChat({ user }: { user: any }) {
             )}
           </div>
 
-          {/* Tool Execution Logs */}
           <div style={{ border: '1px solid var(--border)', padding: '0.5rem', borderRadius: '3px', backgroundColor: 'rgba(0,0,0,0.2)' }}>
             <div style={{ color: 'var(--accent)', fontWeight: 700, marginBottom: '0.25rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
               <Eye size={12} /> EXECUTED TOOL TRACE

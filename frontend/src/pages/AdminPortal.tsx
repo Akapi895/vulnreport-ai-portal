@@ -101,13 +101,11 @@ export default function AdminPortal() {
         </div>
       )}
       
-      {/* Header & Sub-navigation */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexShrink: 0 }}>
         <h2 style={{ fontSize: '18px', fontFamily: 'var(--font-display)', display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--warning)' }}>
           <ShieldAlert size={20} /> ADMINISTRATIVE CONTROL PORTAL
         </h2>
         
-        {/* Sub-tabs */}
         <div style={{ display: 'flex', gap: '0.25rem' }}>
           <button 
             onClick={() => { setActiveSubTab('logs'); setSelectedLog(null); }}
@@ -140,13 +138,11 @@ export default function AdminPortal() {
         </div>
       </div>
 
-      {/* Main Admin Screen */}
       <div className="cyber-card" style={{ flex: 1, padding: '1.25rem', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
         
         {activeSubTab === 'logs' && (
           <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '1.25rem', height: '100%', overflow: 'hidden' }}>
             
-            {/* Audit Logs list */}
             <div style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
               <div style={{ paddingBottom: '0.5rem', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ fontSize: '12px', fontFamily: 'var(--font-mono)', fontWeight: 600 }}>EVENT LOGGING FLOW (MAX 200)</span>
@@ -201,7 +197,6 @@ export default function AdminPortal() {
               </div>
             </div>
 
-            {/* Log Detail Inspector */}
             <div style={{ borderLeft: '1px solid var(--border)', paddingLeft: '1.25rem', display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
               <div style={{ borderBottom: '1px solid var(--border)', paddingBottom: '0.5rem', marginBottom: '0.75rem', fontSize: '12px', fontFamily: 'var(--font-mono)', color: 'var(--warning)', fontWeight: 600 }}>
                 DETAILED EVENT TRACE

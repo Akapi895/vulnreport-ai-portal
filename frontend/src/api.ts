@@ -1,5 +1,3 @@
-// API Helper for VulnReport AI Portal
-
 const API_BASE = '/api';
 
 export interface User {
@@ -71,7 +69,6 @@ export interface AiResponse {
 }
 
 async function request<T>(path: string, options: Omit<RequestInit, 'body'> & { body?: any } = {}): Promise<T> {
-  // Enforce session credentials for cookies
   options.credentials = 'include';
   
   if (options.body && !(options.body instanceof FormData) && typeof options.body === 'object') {

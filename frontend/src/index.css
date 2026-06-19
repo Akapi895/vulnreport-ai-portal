@@ -1,12 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
 
-/* Default Theme - Blue (Defensive Analyst Mode) */
 :root {
   --font-display: 'Outfit', 'Inter', sans-serif;
   --font-body: 'Inter', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 
-  /* Blue Theme Colors */
   --bg-base: #070b13;
   --bg-surface: #0f1626;
   --bg-panel: #162238;
@@ -35,7 +33,6 @@
   --scanline-opacity: 0.03;
 }
 
-/* Red Theme (Offensive Attacker Mode) */
 body.theme-red {
   --bg-base: #060303;
   --bg-surface: #0f0707;
@@ -65,7 +62,6 @@ body.theme-red {
   --scanline-opacity: 0.08;
 }
 
-/* Global Reset */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -89,7 +85,6 @@ h1, h2, h3, h4, h5, h6 {
   letter-spacing: -0.02em;
 }
 
-/* Scrollbar Styling */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -105,7 +100,6 @@ h1, h2, h3, h4, h5, h6 {
   background: var(--accent);
 }
 
-/* Layout Utilities */
 .app-container {
   display: flex;
   flex-direction: column;
@@ -114,7 +108,6 @@ h1, h2, h3, h4, h5, h6 {
   overflow: hidden;
 }
 
-/* CRT Screen Scanline Overlay */
 .crt-effect {
   position: fixed;
   top: 0;
@@ -128,7 +121,6 @@ h1, h2, h3, h4, h5, h6 {
   opacity: var(--scanline-opacity);
 }
 
-/* Theme Glitch Transition */
 @keyframes screen-glitch {
   0% { transform: translate(0); filter: hue-rotate(0deg); }
   10% { transform: translate(-2px, 2px); filter: hue-rotate(90deg) contrast(1.2); }
@@ -141,7 +133,6 @@ h1, h2, h3, h4, h5, h6 {
   animation: screen-glitch 0.35s ease;
 }
 
-/* Cyber Dashboard Card */
 .cyber-card {
   background-color: var(--bg-surface);
   border: 1px solid var(--border);
@@ -170,7 +161,6 @@ h1, h2, h3, h4, h5, h6 {
   height: 100%;
 }
 
-/* Cyber Terminal Console */
 .cyber-terminal {
   font-family: var(--font-mono);
   background-color: #050505;
@@ -210,7 +200,6 @@ h1, h2, h3, h4, h5, h6 {
   50% { opacity: 1; }
 }
 
-/* Button & Form Control styling */
 .cyber-btn {
   background-color: transparent;
   color: var(--text-main);
@@ -275,7 +264,6 @@ h1, h2, h3, h4, h5, h6 {
   box-shadow: 0 0 8px var(--accent-glow);
 }
 
-/* Badges */
 .cyber-badge {
   display: inline-flex;
   align-items: center;
@@ -312,7 +300,6 @@ h1, h2, h3, h4, h5, h6 {
   border-color: rgba(245, 158, 11, 0.25);
 }
 
-/* Ambient glow & indicators */
 .health-indicator {
   width: 8px;
   height: 8px;
@@ -343,7 +330,6 @@ h1, h2, h3, h4, h5, h6 {
   100% { transform: scale(1); opacity: 1; }
 }
 
-/* Split screens and grid areas */
 .layout-split {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -360,7 +346,6 @@ h1, h2, h3, h4, h5, h6 {
   overflow: hidden;
 }
 
-/* Animations */
 .scanlines-anim {
   position: relative;
 }
@@ -376,7 +361,6 @@ h1, h2, h3, h4, h5, h6 {
   opacity: 0.4;
 }
 
-/* Markdown Content Styles */
 .markdown-content {
   font-family: var(--font-body);
   line-height: 1.6;

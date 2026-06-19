@@ -30,7 +30,6 @@ function tabFromPath(pathname: string): string {
   return PATH_TO_TAB[pathname] || 'dashboard';
 }
 
-// Theme & Auth Contexts
 interface ThemeContextType {
   theme: 'blue' | 'red';
   toggleTheme: () => void;
@@ -53,7 +52,6 @@ export default function App() {
     return savedTab || tabFromPath(window.location.pathname);
   });
   
-  // Auth Form State
   const [isRegistering, setIsRegistering] = useState(false);
   const [authUsername, setAuthUsername] = useState('');
   const [authEmail, setAuthEmail] = useState('');
@@ -61,7 +59,6 @@ export default function App() {
   const [authDisplayName, setAuthDisplayName] = useState('');
   const [authError, setAuthError] = useState('');
 
-  // Fetch current user on start
   useEffect(() => {
     checkUserSession();
   }, []);
@@ -102,7 +99,6 @@ export default function App() {
     try {
       const data = await api.auth.login({ username: authUsername, password: authPassword });
       setUser(data);
-      // Reset form
       setAuthUsername('');
       setAuthPassword('');
     } catch (err: any) {
@@ -121,7 +117,6 @@ export default function App() {
         display_name: authDisplayName || authUsername
       });
       setUser(data);
-      // Reset form
       setAuthUsername('');
       setAuthEmail('');
       setAuthPassword('');
@@ -154,7 +149,6 @@ export default function App() {
     setActiveTab(tab);
   };
 
-  // Dynamic Theme Switching with Screen Glitch Effect
   const toggleTheme = () => {
     setGlitchActive(true);
     const newTheme = theme === 'blue' ? 'red' : 'blue';
@@ -177,13 +171,11 @@ export default function App() {
     );
   }
 
-  // If user is not logged in
   if (!user) {
     return (
       <div className="app-container" style={{ minHeight: '100vh', background: 'var(--bg-base)', overflowY: 'auto' }}>
         <div className="crt-effect" />
         
-        {/* Floating Navbar */}
         <header style={{
           padding: '1rem 2rem',
           borderBottom: '1px solid var(--border)',
@@ -212,7 +204,6 @@ export default function App() {
           </button>
         </header>
 
-        {/* Auth Form Area */}
         <main className={glitchActive ? 'glitch-active' : ''} style={{
           display: 'flex',
           flex: 1,
@@ -323,7 +314,6 @@ export default function App() {
               </button>
             </div>
             
-            {/* Quick Credentials Info for Lab */}
             <div style={{ 
               marginTop: '2rem', 
               padding: '0.75rem', 
@@ -336,7 +326,7 @@ export default function App() {
               <div style={{ color: 'var(--accent)', marginBottom: '0.25rem', fontWeight: 600 }}>DEMO CREDENTIALS:</div>
               <div>Attacker: <span style={{ color: 'var(--text-main)' }}>attacker / attacker123</span></div>
               <div>Victim: <span style={{ color: 'var(--text-main)' }}>victim / victim123</span></div>
-              <div>Admin: <span style={{ color: 'var(--text-main)' }}>admin / admin123</span></div>
+              {/* <div>Admin: <span style={{ color: 'var(--text-main)' }}>admin / admin123</span></div> */}
             </div>
           </div>
         </main>
@@ -344,13 +334,11 @@ export default function App() {
     );
   }
 
-  // If user is logged in, show main portal
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme }}>
       <div className="app-container">
         <div className="crt-effect" />
 
-        {/* Global Navigation Header */}
         <header style={{
           padding: '0.75rem 1.5rem',
           borderBottom: '1px solid var(--border)',
@@ -375,7 +363,6 @@ export default function App() {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            {/* Navigation tabs */}
             <nav style={{ display: 'flex', gap: '0.25rem' }}>
               <button 
                 onClick={() => navigateToTab('dashboard')} 
@@ -416,10 +403,8 @@ export default function App() {
               )}
             </nav>
 
-            {/* Separator */}
             <div style={{ height: '20px', width: '1px', backgroundColor: 'var(--border)' }} />
 
-            {/* User Profile Info & Logout */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
               <div style={{ textAlign: 'right', fontFamily: 'var(--font-mono)', fontSize: '12px' }}>
                 <div style={{ fontWeight: 600, color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -446,7 +431,6 @@ export default function App() {
           </div>
         </header>
 
-        {/* Dynamic Workspace Container */}
         <main 
           className={glitchActive ? 'glitch-active' : ''} 
           style={{

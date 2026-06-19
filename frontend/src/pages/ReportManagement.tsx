@@ -22,7 +22,6 @@ export default function ReportManagement({ user: _user }: ReportManagementProps)
   const [loading, setLoading] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
 
-  // Upload Form State
   const [showUploadForm, setShowUploadForm] = useState(false);
   const [uploadTitle, setUploadTitle] = useState('');
   const [uploadCveId, setUploadCveId] = useState('');
@@ -33,10 +32,8 @@ export default function ReportManagement({ user: _user }: ReportManagementProps)
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploadError, setUploadError] = useState('');
 
-  // Assessment Input
   const [selectedService, setSelectedService] = useState('');
 
-  // Terminal Simulator Logs
   const [terminalLogs, setTerminalLogs] = useState<string[]>([]);
   const terminalEndRef = useRef<HTMLDivElement>(null);
 
@@ -80,7 +77,6 @@ export default function ReportManagement({ user: _user }: ReportManagementProps)
       let newReport: Report;
 
       if (selectedFile) {
-        // Form Data upload
         const formData = new FormData();
         formData.append('title', uploadTitle);
         formData.append('cve_id', uploadCveId);
@@ -94,7 +90,6 @@ export default function ReportManagement({ user: _user }: ReportManagementProps)
         if (!uploadContent) {
           throw new Error('Report content is required if no file is uploaded.');
         }
-        // Manual JSON upload
         newReport = await api.reports.upload({
           title: uploadTitle,
           cve_id: uploadCveId || null,
@@ -109,7 +104,6 @@ export default function ReportManagement({ user: _user }: ReportManagementProps)
       setActiveReport(newReport);
       setShowUploadForm(false);
       
-      // Reset upload inputs
       setUploadTitle('');
       setUploadCveId('');
       setUploadSeverity('low');
@@ -118,7 +112,6 @@ export default function ReportManagement({ user: _user }: ReportManagementProps)
       setUploadSourceUrl('');
       setSelectedFile(null);
 
-      // Welcome log in terminal
       setTerminalLogs([
         `[SYS] SECURE INGESTION: Report for ${newReport.cve_id || 'CVE'} indexed.`,
         `[SYS] RAG status: Vectorized and inserted into Chroma collection.`
@@ -145,7 +138,6 @@ export default function ReportManagement({ user: _user }: ReportManagementProps)
     }
   };
 
-  // Simulate terminal logs dynamically
   const runLogsSequence = (lines: string[]) => {
     setTerminalLogs([]);
     lines.forEach((line, index) => {
@@ -159,7 +151,6 @@ export default function ReportManagement({ user: _user }: ReportManagementProps)
     if (!activeReport) return;
     setActionLoading(true);
     
-    // Initial logs
     runLogsSequence([
       `[THOUGHT] Triggered summary action for ${activeReport.cve_id || activeReport.title}`,
       `[THOUGHT] Querying vector DB to retrieve relevant advisory context...`,
@@ -170,11 +161,9 @@ export default function ReportManagement({ user: _user }: ReportManagementProps)
     try {
       const updated = await api.reports.summarize(activeReport.id);
       
-      // Update active report state
       setActiveReport(updated);
       setReports(reports.map(r => r.id === updated.id ? updated : r));
 
-      // Append terminal output based on whether indirect injection was triggered
       setTimeout(() => {
         const isIndirectInjection = activeReport.content.toLowerCase().includes('fetch_url') || 
                                     activeReport.content.toLowerCase().includes('attacker.example');
@@ -265,7 +254,6 @@ export default function ReportManagement({ user: _user }: ReportManagementProps)
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       
-      {/* Upload Toggle & Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexShrink: 0 }}>
         <h2 style={{ fontSize: '18px', fontFamily: 'var(--font-display)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <FileText size={20} style={{ color: 'var(--accent)' }} /> VULNERABILITY ADVISORY MANAGEMENT
@@ -283,7 +271,6 @@ export default function ReportManagement({ user: _user }: ReportManagementProps)
       </div>
 
       {showUploadForm ? (
-        /* Upload Form Screen */
         <div className="cyber-card" style={{ padding: '1.5rem', overflowY: 'auto', flex: 1 }}>
           <h3 style={{ marginBottom: '1rem', color: 'var(--accent)', fontFamily: 'var(--font-mono)' }}>[UPLOAD CVE REPORT]</h3>
           
@@ -395,10 +382,8 @@ export default function ReportManagement({ user: _user }: ReportManagementProps)
           </form>
         </div>
       ) : (
-        /* 3-Column Report View */
         <div className="layout-three-col" style={{ flex: 1 }}>
           
-          {/* Column 1: Report List & Selection (Left) */}
           <div className="cyber-card" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
             <div style={{ padding: '0.75rem', borderBottom: '1px solid var(--border)', fontSize: '12px', fontWeight: 600, fontFamily: 'var(--font-mono)', display: 'flex', justifyContent: 'space-between', color: 'var(--accent)' }}>
               <span>AVAILABLE REPORTS ({reports.length})</span>
@@ -496,12 +481,10 @@ export default function ReportManagement({ user: _user }: ReportManagementProps)
             )}
           </div>
 
-          {/* Column 2: AI WorkSpace & Report Details (Middle) */}
           <div className="cyber-card" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', padding: '1rem' }}>
             {activeReport ? (
               <div style={{ display: 'flex', flexDirection: 'column', height: '100%', gap: '1rem', overflowY: 'auto' }}>
                 
-                {/* Title and metadata */}
                 <div>
                   <h3 style={{ fontSize: '16px', fontWeight: 700 }}>{activeReport.title}</h3>
                   <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.25rem', fontSize: '11px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
@@ -513,7 +496,6 @@ export default function ReportManagement({ user: _user }: ReportManagementProps)
                   </div>
                 </div>
 
-                {/* Report Content */}
                 <div style={{ flex: 1, border: '1px solid var(--border)', borderRadius: '4px', backgroundColor: 'rgba(0,0,0,0.1)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
                   <div style={{ padding: '0.4rem 0.5rem', borderBottom: '1px solid var(--border)', fontSize: '10px', fontFamily: 'var(--font-mono)', color: 'var(--accent)', fontWeight: 600 }}>
                     RAW REPORT CONTENT
@@ -530,10 +512,8 @@ export default function ReportManagement({ user: _user }: ReportManagementProps)
                   </div>
                 </div>
 
-                {/* AI Outputs */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                   
-                  {/* Summary output */}
                   {activeReport.summary && (
                     <div style={{ border: '1px solid var(--border)', borderRadius: '4px', backgroundColor: 'rgba(59, 130, 246, 0.04)', padding: '0.75rem' }}>
                       <div style={{ fontSize: '11px', fontFamily: 'var(--font-mono)', color: 'var(--accent)', fontWeight: 700, marginBottom: '0.25rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -545,7 +525,6 @@ export default function ReportManagement({ user: _user }: ReportManagementProps)
                     </div>
                   )}
 
-                  {/* Impact assessment output */}
                   {activeReport.assessment_result && (
                     <div style={{ 
                       border: '1px solid',
@@ -583,7 +562,6 @@ export default function ReportManagement({ user: _user }: ReportManagementProps)
             )}
           </div>
 
-          {/* Column 3: Agent Terminal Console (Right) */}
           <div className="cyber-terminal" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
             <div className="terminal-header">
               <span>🤖 AGENT THOUGHT TERMINAL</span>
@@ -592,12 +570,12 @@ export default function ReportManagement({ user: _user }: ReportManagementProps)
 
             <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '11px' }}>
               {terminalLogs.map((log, index) => {
-                let logColor = '#a8a29e'; // default muted gray
-                if (log.startsWith('[THOUGHT]')) logColor = '#3b82f6'; // blue
-                else if (log.startsWith('[CALLING TOOL]')) logColor = '#fbbf24'; // yellow
-                else if (log.startsWith('[TOOL OUTPUT]')) logColor = '#10b981'; // green
-                else if (log.startsWith('[CRITICAL') || log.startsWith('[WARNING') || log.startsWith('[ALERT')) logColor = '#ef4444'; // red
-                else if (log.startsWith('[SYS]')) logColor = '#94a3b8'; // gray
+                let logColor = '#a8a29e';
+                if (log.startsWith('[THOUGHT]')) logColor = '#3b82f6';
+                else if (log.startsWith('[CALLING TOOL]')) logColor = '#fbbf24';
+                else if (log.startsWith('[TOOL OUTPUT]')) logColor = '#10b981';
+                else if (log.startsWith('[CRITICAL') || log.startsWith('[WARNING') || log.startsWith('[ALERT')) logColor = '#ef4444';
+                else if (log.startsWith('[SYS]')) logColor = '#94a3b8';
 
                 return (
                   <div key={index} style={{ color: logColor, whiteSpace: 'pre-wrap', lineHeight: '1.4' }}>
