@@ -1,9 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FileText, Upload, Trash2, Cpu, Play, Server, AlertOctagon } from 'lucide-react';
 import { api, type Report } from '../api';
+import { marked } from 'marked';
 
 interface ReportManagementProps {
   user: any;
+}
+
+function renderMarkdown(markdown: string): React.ReactNode {
+  try {
+    const rawMarkup = marked.parse(markdown, { gfm: true, breaks: true }) as string;
+    return <div dangerouslySetInnerHTML={{ __html: rawMarkup }} className="markdown-content" />;
+  } catch (e) {
+    return <div style={{ whiteSpace: 'pre-wrap' }}>{markdown}</div>;
+  }
 }
 
 export default function ReportManagement({ user: _user }: ReportManagementProps) {
@@ -508,17 +518,16 @@ export default function ReportManagement({ user: _user }: ReportManagementProps)
                   <div style={{ padding: '0.4rem 0.5rem', borderBottom: '1px solid var(--border)', fontSize: '10px', fontFamily: 'var(--font-mono)', color: 'var(--accent)', fontWeight: 600 }}>
                     RAW REPORT CONTENT
                   </div>
-                  <pre style={{ 
+                  <div style={{ 
                     padding: '0.75rem', 
                     fontFamily: 'var(--font-mono)', 
                     fontSize: '11px', 
                     overflow: 'auto', 
-                    whiteSpace: 'pre-wrap', 
                     flex: 1, 
                     color: 'var(--text-main)' 
                   }}>
-                    {activeReport.content}
-                  </pre>
+                    {renderMarkdown(activeReport.content)}
+                  </div>
                 </div>
 
                 {/* AI Outputs */}

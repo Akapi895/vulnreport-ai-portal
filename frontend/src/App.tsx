@@ -7,6 +7,29 @@ import AIChat from './pages/AIChat';
 import PrivateNotes from './pages/PrivateNotes';
 import AdminPortal from './pages/AdminPortal';
 
+const TAB_TO_PATH: Record<string, string> = {
+  dashboard: '/',
+  reports: '/reports',
+  chat: '/chat',
+  notes: '/notes',
+  admin: '/admin',
+};
+
+const PATH_TO_TAB: Record<string, string> = {
+  '/': 'dashboard',
+  '/dashboard': 'dashboard',
+  '/reports': 'reports',
+  '/chat': 'chat',
+  '/notes': 'notes',
+  '/admin': 'admin',
+};
+
+const THEME_STORAGE_KEY = 'vulnreport.theme';
+
+function tabFromPath(pathname: string): string {
+  return PATH_TO_TAB[pathname] || 'dashboard';
+}
+
 // Theme & Auth Contexts
 interface ThemeContextType {
   theme: 'blue' | 'red';
@@ -19,11 +42,16 @@ export const ThemeContext = createContext<ThemeContextType>({
 });
 
 export default function App() {
-  const [theme, setTheme] = useState<'blue' | 'red'>('blue');
+  const [theme, setTheme] = useState<'blue' | 'red'>(() => {
+    return localStorage.getItem(THEME_STORAGE_KEY) === 'red' ? 'red' : 'blue';
+  });
   const [glitchActive, setGlitchActive] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<string>('dashboard');
+  const [activeTab, setActiveTab] = useState<string>(() => {
+    const savedTab = localStorage.getItem('vulnreport.activeTab');
+    return savedTab || tabFromPath(window.location.pathname);
+  });
   
   // Auth Form State
   const [isRegistering, setIsRegistering] = useState(false);
@@ -37,6 +65,24 @@ export default function App() {
   useEffect(() => {
     checkUserSession();
   }, []);
+
+  useEffect(() => {
+    document.body.classList.toggle('theme-red', theme === 'red');
+    localStorage.setItem(THEME_STORAGE_KEY, theme);
+  }, [theme]);
+
+  useEffect(() => {
+    const handlePopState = () => setActiveTab(tabFromPath(window.location.pathname));
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('vulnreport.activeTab', activeTab);
+    if (user && activeTab === 'admin' && user.role !== 'admin') {
+      navigateToTab('dashboard', true);
+    }
+  }, [activeTab, user]);
 
   const checkUserSession = async () => {
     setAuthLoading(true);
@@ -89,8 +135,23 @@ export default function App() {
     try {
       await api.auth.logout();
     } catch (_) {}
+    if (user) {
+      sessionStorage.removeItem(`vulnreport.chat.${user.id}`);
+      sessionStorage.removeItem(`vulnreport.chat_context.${user.id}`);
+      sessionStorage.removeItem(`vulnreport.chat_tool.${user.id}`);
+    }
+    localStorage.removeItem('vulnreport.activeTab');
     setUser(null);
-    setActiveTab('dashboard');
+    navigateToTab('dashboard', true);
+  };
+
+  const navigateToTab = (tab: string, replace = false) => {
+    const nextPath = TAB_TO_PATH[tab] || '/';
+    if (window.location.pathname !== nextPath) {
+      const method = replace ? 'replaceState' : 'pushState';
+      window.history[method]({}, '', nextPath);
+    }
+    setActiveTab(tab);
   };
 
   // Dynamic Theme Switching with Screen Glitch Effect
@@ -98,12 +159,6 @@ export default function App() {
     setGlitchActive(true);
     const newTheme = theme === 'blue' ? 'red' : 'blue';
     setTheme(newTheme);
-    
-    if (newTheme === 'red') {
-      document.body.classList.add('theme-red');
-    } else {
-      document.body.classList.remove('theme-red');
-    }
 
     setTimeout(() => {
       setGlitchActive(false);
@@ -323,28 +378,28 @@ export default function App() {
             {/* Navigation tabs */}
             <nav style={{ display: 'flex', gap: '0.25rem' }}>
               <button 
-                onClick={() => setActiveTab('dashboard')} 
+                onClick={() => navigateToTab('dashboard')} 
                 className={`cyber-btn ${activeTab === 'dashboard' ? 'cyber-btn-primary' : ''}`}
                 style={{ fontSize: '11px', padding: '0.4rem 0.8rem' }}
               >
                 <LayoutDashboard size={14} /> DASHBOARD
               </button>
               <button 
-                onClick={() => setActiveTab('reports')} 
+                onClick={() => navigateToTab('reports')} 
                 className={`cyber-btn ${activeTab === 'reports' ? 'cyber-btn-primary' : ''}`}
                 style={{ fontSize: '11px', padding: '0.4rem 0.8rem' }}
               >
                 <FileText size={14} /> REPORTS
               </button>
               <button 
-                onClick={() => setActiveTab('chat')} 
+                onClick={() => navigateToTab('chat')} 
                 className={`cyber-btn ${activeTab === 'chat' ? 'cyber-btn-primary' : ''}`}
                 style={{ fontSize: '11px', padding: '0.4rem 0.8rem' }}
               >
                 <MessageSquare size={14} /> AI CHAT
               </button>
               <button 
-                onClick={() => setActiveTab('notes')} 
+                onClick={() => navigateToTab('notes')} 
                 className={`cyber-btn ${activeTab === 'notes' ? 'cyber-btn-primary' : ''}`}
                 style={{ fontSize: '11px', padding: '0.4rem 0.8rem' }}
               >
@@ -352,7 +407,7 @@ export default function App() {
               </button>
               {user.role === 'admin' && (
                 <button 
-                  onClick={() => setActiveTab('admin')} 
+                  onClick={() => navigateToTab('admin')} 
                   className={`cyber-btn ${activeTab === 'admin' ? 'cyber-btn-primary' : ''}`}
                   style={{ fontSize: '11px', padding: '0.4rem 0.8rem', borderColor: 'var(--warning)', color: activeTab === 'admin' ? '#fff' : 'var(--warning)' }}
                 >

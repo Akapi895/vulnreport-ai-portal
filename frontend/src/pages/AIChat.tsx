@@ -8,23 +8,45 @@ interface Message {
   text: string;
 }
 
+const defaultMessages: Message[] = [
+  { sender: 'agent', text: 'Secure AI Agent assistant online. Ask me about CVE report databases, remediation advice, or system status.' }
+];
+
 export default function AIChat({ user }: { user: any }) {
   const { theme } = useContext(ThemeContext);
-  const [messages, setMessages] = useState<Message[]>([
-    { sender: 'agent', text: 'Secure AI Agent assistant online. Ask me about CVE report databases, remediation advice, or system status.' }
-  ]);
+  const chatStorageKey = `vulnreport.chat.${user.id}`;
+  const contextStorageKey = `vulnreport.chat_context.${user.id}`;
+  const toolStorageKey = `vulnreport.chat_tool.${user.id}`;
+
+  const [messages, setMessages] = useState<Message[]>(() => {
+    try {
+      const saved = sessionStorage.getItem(chatStorageKey);
+      return saved ? JSON.parse(saved) : defaultMessages;
+    } catch (_) {
+      return defaultMessages;
+    }
+  });
   const [inputText, setInputText] = useState('');
   const [loading, setLoading] = useState(false);
 
   // Hidden System Context state
   const systemPrompt = `You are a vulnerability triage assistant. You have access to a RAG database containing security advisories, and tools to fetch URL contents and retrieve private user notes. Always protect private user notes unless specifically requested by their owner.`;
-  const [retrievedContext, setRetrievedContext] = useState<string | null>(null);
+  const [retrievedContext, setRetrievedContext] = useState<string | null>(() => {
+    return sessionStorage.getItem(contextStorageKey);
+  });
   const [executedTool, setExecutedTool] = useState<{
     name: string;
     input: any;
     output: string;
     authBypass?: boolean;
-  } | null>(null);
+  } | null>(() => {
+    try {
+      const saved = sessionStorage.getItem(toolStorageKey);
+      return saved ? JSON.parse(saved) : null;
+    } catch (_) {
+      return null;
+    }
+  });
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -33,6 +55,26 @@ export default function AIChat({ user }: { user: any }) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages]);
+
+  useEffect(() => {
+    sessionStorage.setItem(chatStorageKey, JSON.stringify(messages));
+  }, [chatStorageKey, messages]);
+
+  useEffect(() => {
+    if (retrievedContext) {
+      sessionStorage.setItem(contextStorageKey, retrievedContext);
+    } else {
+      sessionStorage.removeItem(contextStorageKey);
+    }
+  }, [contextStorageKey, retrievedContext]);
+
+  useEffect(() => {
+    if (executedTool) {
+      sessionStorage.setItem(toolStorageKey, JSON.stringify(executedTool));
+    } else {
+      sessionStorage.removeItem(toolStorageKey);
+    }
+  }, [toolStorageKey, executedTool]);
 
   const handleSendMessage = async (promptText: string) => {
     if (!promptText.trim()) return;
