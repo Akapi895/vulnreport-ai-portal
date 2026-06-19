@@ -20,6 +20,8 @@ services:
 
   backend-api:
     build: ./backend
+    volumes:
+      - ./backend/flags/admin_flag.txt:/app/flags/admin_flag.txt:ro
     environment:
       DATABASE_URL: postgresql://vulnapp:vulnpass123@postgres:5432/vulnreport
       DB_HOST: postgres

@@ -8,6 +8,8 @@ export default function AdminPortal() {
   const [users, setUsers] = useState<User[]>([]);
   const [reports, setReports] = useState<Report[]>([]);
   const [status, setStatus] = useState<LabStatus | null>(null);
+  const [adminFlag, setAdminFlag] = useState('');
+  const [showFlagModal, setShowFlagModal] = useState(false);
   
   const [loading, setLoading] = useState(true);
   const [selectedLog, setSelectedLog] = useState<AuditLog | null>(null);
@@ -15,6 +17,20 @@ export default function AdminPortal() {
   useEffect(() => {
     fetchAdminData();
   }, [activeSubTab]);
+
+  useEffect(() => {
+    fetchAdminFlag();
+  }, []);
+
+  const fetchAdminFlag = async () => {
+    try {
+      const data = await api.admin.getFlag();
+      setAdminFlag(data.flag);
+      setShowFlagModal(true);
+    } catch (err) {
+      console.error('Failed to fetch admin flag:', err);
+    }
+  };
 
   const fetchAdminData = async () => {
     setLoading(true);
@@ -41,6 +57,49 @@ export default function AdminPortal() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', height: '100%' }}>
+      {showFlagModal && adminFlag && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          zIndex: 50,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: 'rgba(0,0,0,0.72)',
+          backdropFilter: 'blur(4px)'
+        }}>
+          <div className="cyber-card" style={{
+            width: 'min(560px, calc(100vw - 2rem))',
+            padding: '1.5rem',
+            borderColor: 'var(--warning)',
+            boxShadow: '0 0 30px rgba(245, 158, 11, 0.16)'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--warning)', fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: 700, marginBottom: '0.75rem' }}>
+              <ShieldAlert size={20} /> ADMIN ACCESS CONFIRMED
+            </div>
+            <p style={{ color: 'var(--text-muted)', fontSize: '13px', marginBottom: '1rem' }}>
+              Final lab flag unlocked after authenticating as admin.
+            </p>
+            <div style={{
+              padding: '0.9rem',
+              border: '1px dashed var(--warning)',
+              borderRadius: '4px',
+              backgroundColor: 'rgba(245, 158, 11, 0.06)',
+              color: 'var(--warning)',
+              fontFamily: 'var(--font-mono)',
+              fontSize: '14px',
+              wordBreak: 'break-all'
+            }}>
+              {adminFlag}
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '1rem' }}>
+              <button className="cyber-btn cyber-btn-primary" onClick={() => setShowFlagModal(false)}>
+                CLOSE
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       
       {/* Header & Sub-navigation */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexShrink: 0 }}>

@@ -11,6 +11,12 @@ from app.security import require_admin
 router = APIRouter()
 
 
+@router.get("/flag")
+def get_flag(admin=Depends(require_admin)):
+    with open("/app/flags/admin_flag.txt", "r", encoding="utf-8") as flag_file:
+        return {"flag": flag_file.read().strip()}
+
+
 @router.get("/users", response_model=list[UserOut])
 def users(db: Session = Depends(get_db), admin=Depends(require_admin)):
     return db.query(User).order_by(User.id.asc()).all()

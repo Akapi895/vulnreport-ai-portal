@@ -130,5 +130,6 @@ export const api = {
     getReports: () => request<Report[]>('/admin/reports', { method: 'GET' }),
     getAuditLogs: () => request<AuditLog[]>('/admin/audit-logs', { method: 'GET' }),
     getStatus: () => request<LabStatus>('/admin/status', { method: 'GET' }),
+    getFlag: () => request<{ flag: string }>('/admin/flag', { method: 'GET' }),
   }
 };
