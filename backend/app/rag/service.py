@@ -70,6 +70,7 @@ class RAGService:
         where = None
         fetch_k = limit
         cve_id = _extract_cve_id(query)
+        should_prioritize_untrusted = bool(cve_id and settings.lab_mode and settings.enable_vuln_rag_poisoning)
         if not (settings.lab_mode and settings.enable_vuln_rag_poisoning):
             where = {"trust_label": "clean"}
             fetch_k = max(limit * settings.rag_search_pool_multiplier, limit)
@@ -78,12 +79,15 @@ class RAGService:
             fetch_k = max(limit * settings.rag_search_pool_multiplier, limit)
 
         query_embedding = self.embedding.embed_text(query)
-        return self.retriever.query(
+        chunks = self.retriever.query(
             query_embedding=query_embedding,
-            limit=limit,
+            limit=fetch_k,
             where=where,
             fetch_k=fetch_k,
         )
+        if should_prioritize_untrusted:
+            chunks = _prioritize_untrusted_chunks(chunks)
+        return chunks[:limit]
 
 
 def _format_chunk(chunk: dict) -> str:
@@ -111,6 +115,16 @@ def _and_where(left: dict | None, right: dict) -> dict:
     if not left:
         return right
     return {"$and": [left, right]}
+
+
+def _prioritize_untrusted_chunks(chunks: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    return sorted(
+        chunks,
+        key=lambda chunk: (
+            (chunk.get("metadata") or {}).get("trust_label") != "untrusted",
+            chunk.get("distance") if chunk.get("distance") is not None else 1,
+        ),
+    )
 
 
 def _trust_label(report: Report) -> str:

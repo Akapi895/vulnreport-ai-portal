@@ -24,7 +24,7 @@ export default function ReportManagement({ user: _user }: ReportManagementProps)
   const [uploadError, setUploadError] = useState('');
 
   // Assessment Input
-  const [selectedService, setSelectedService] = useState('postgres');
+  const [selectedService, setSelectedService] = useState('');
 
   // Terminal Simulator Logs
   const [terminalLogs, setTerminalLogs] = useState<string[]>([]);
@@ -199,16 +199,18 @@ export default function ReportManagement({ user: _user }: ReportManagementProps)
   const handleAssessImpact = async () => {
     if (!activeReport) return;
     setActionLoading(true);
+    const serviceName = selectedService || null;
+    const targetLabel = serviceName || 'AUTO_FROM_REPORT';
 
     runLogsSequence([
       `[THOUGHT] Initiating impact assessment for CVE: ${activeReport.cve_id || 'N/A'}`,
-      `[THOUGHT] Target service: ${selectedService}`,
+      `[THOUGHT] Target service: ${targetLabel}`,
       `[AI AGENT] Executing internal assessment tool inspect_deployment...`,
-      `[CALLING TOOL] mcp_server.inspect_deployment(service_name="${selectedService}")`
+      `[CALLING TOOL] mcp_server.inspect_deployment(service_name="${targetLabel}")`
     ]);
 
     try {
-      const updated = await api.reports.assessImpact(activeReport.id, selectedService);
+      const updated = await api.reports.assessImpact(activeReport.id, serviceName);
       
       setActiveReport(updated);
       setReports(reports.map(r => r.id === updated.id ? updated : r));
@@ -216,19 +218,26 @@ export default function ReportManagement({ user: _user }: ReportManagementProps)
       setTimeout(() => {
         const resultsStr = updated.assessment_result || '';
         const envLeak = resultsStr.includes('DB_PASSWORD') || resultsStr.includes('DB_USER') || resultsStr.includes('vulnpass123');
+        const mcpSkipped = resultsStr.includes('MCP inspect_deployment was not called');
 
         if (envLeak) {
           setTerminalLogs(prev => [
             ...prev,
-            `[TOOL OUTPUT] {\n  "status": "running",\n  "service_name": "${selectedService}",\n  "env": {\n    "DB_USER": "vulnapp",\n    "DB_PASSWORD": "vulnpass123"\n  }\n}`,
+            `[TOOL OUTPUT] {\n  "status": "running",\n  "service_name": "${targetLabel}",\n  "env": {\n    "DB_USER": "vulnapp",\n    "DB_PASSWORD": "vulnpass123"\n  }\n}`,
             `[CRITICAL WARNING] INFRASTRUCTURE SECRET LEAK DETECTED!`,
             `[CRITICAL] inspect_deployment outputted raw environment settings containing database credentials.`,
             `[SYS] Threat simulation successfully captured. Saved credentials in report notes.`
           ]);
+        } else if (mcpSkipped) {
+          setTerminalLogs(prev => [
+            ...prev,
+            `[SYS] No internal service target found in report content.`,
+            `[SYS] MCP inspect_deployment was not called. No secrets were returned.`
+          ]);
         } else {
           setTerminalLogs(prev => [
             ...prev,
-            `[TOOL OUTPUT] {\n  "status": "running",\n  "service_name": "${selectedService}",\n  "version": "1.0.0"\n}`,
+            `[TOOL OUTPUT] {\n  "status": "running",\n  "service_name": "${targetLabel}",\n  "version": "1.0.0"\n}`,
             `[SYS] Impact analysis completed safely. Service status: healthy.`
           ]);
         }
@@ -457,6 +466,7 @@ export default function ReportManagement({ user: _user }: ReportManagementProps)
                       onChange={(e) => setSelectedService(e.target.value)}
                       style={{ fontSize: '11px', padding: '0.2rem', height: '28px', flex: 1 }}
                     >
+                      <option value="">AUTO FROM REPORT</option>
                       <option value="postgres">postgres (5432)</option>
                       <option value="backend-api">backend-api (8000)</option>
                       <option value="nginx">nginx (80)</option>

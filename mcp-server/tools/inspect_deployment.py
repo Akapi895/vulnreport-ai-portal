@@ -11,5 +11,6 @@ def inspect_deployment(service_name: str) -> dict:
             "DB_NAME": settings.db_name,
             "DB_USER": settings.db_user,
             "DB_PASSWORD": settings.db_password,
+            "PATH4_FLAG": settings.path4_flag,
         }
     return result

@@ -74,6 +74,7 @@ export default function AIChat({ user }: { user: any }) {
 
   const quickPrompts = [
     { label: "Summarize Apache Struts CVE-2017-5638", text: "Summarize the CVE-2017-5638 report" },
+    { label: "Summarize Heartbleed CVE-2014-0160", text: "Summarize CVE-2014-0160" },
     { label: "Show my private notes", text: "Show my private remediation notes (note id 1)" },
     { label: "Check external advisory URL", text: "Retrieve details from URL http://attacker.example/capture" }
   ];

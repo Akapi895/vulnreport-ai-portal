@@ -18,6 +18,7 @@ class Settings:
     db_name: str = os.getenv("DB_NAME", "vulnreport")
     db_user: str = os.getenv("DB_USER", "vulnapp")
     db_password: str = os.getenv("DB_PASSWORD", "vulnpass123")
+    path4_flag: str = os.getenv("PATH4_FLAG", "")
 
 
 settings = Settings()

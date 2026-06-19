@@ -1,9 +1,10 @@
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.models import Report, ReportStatus, User
+from app.models import AiAuditLog, Report, ReportStatus, User
 from app.schemas import ReportCreate
 from app.services.rag_service import index_report
+from app.rag.service import get_rag_service
 from app.utils.logger import get_logger
 
 
@@ -52,8 +53,14 @@ def get_owned_report(db: Session, owner: User, report_id: int) -> Report:
 
 def delete_owned_report(db: Session, owner: User, report_id: int) -> None:
     report = get_owned_report(db, owner, report_id)
+    get_rag_service().retriever.delete_report(report.id)
+    db.query(AiAuditLog).filter(AiAuditLog.report_id == report.id).update(
+        {AiAuditLog.report_id: None},
+        synchronize_session=False,
+    )
     db.delete(report)
     db.commit()
+    logger.info("Report deleted successfully: report_id=%s", report_id)
 
 
 def save_summary(db: Session, report: Report, summary: str) -> Report:

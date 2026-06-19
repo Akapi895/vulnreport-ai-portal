@@ -113,7 +113,7 @@ export const api = {
     upload: (payload: any) => request<Report>('/reports', { method: 'POST', body: payload }),
     uploadFile: (formData: FormData) => request<Report>('/reports/upload-file', { method: 'POST', body: formData }),
     summarize: (id: number) => request<Report>(`/reports/${id}/summarize`, { method: 'POST' }),
-    assessImpact: (id: number, serviceName: string) => request<Report>(`/reports/${id}/assess-impact`, { method: 'POST', body: { service_name: serviceName } }),
+    assessImpact: (id: number, serviceName: string | null) => request<Report>(`/reports/${id}/assess-impact`, { method: 'POST', body: { service_name: serviceName } }),
     delete: (id: number) => request<{ status: string }>(`/reports/${id}`, { method: 'DELETE' }),
   },
   notes: {

@@ -17,6 +17,7 @@ class Settings:
     )
     llm_url: str = os.getenv("LLM_URL", "http://llm-gateway:11434")
     llm_model: str = os.getenv("LLM_MODEL", "qwen2.5")
+    llm_timeout_seconds: int = int(os.getenv("LLM_TIMEOUT_SECONDS", "120"))
     cors_origins: str = os.getenv(
         "CORS_ORIGINS",
         "http://localhost,http://localhost:5173",

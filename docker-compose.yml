@@ -27,8 +27,10 @@ services:
       DB_NAME: vulnreport
       DB_USER: vulnapp
       DB_PASSWORD: vulnpass123
+      PATH4_FLAG: ${PATH4_FLAG}
       LLM_URL: http://llm-gateway:11434
       LLM_MODEL: qwen2.5
+      LLM_TIMEOUT_SECONDS: 120
       CORS_ORIGINS: http://localhost,http://localhost:5173
       MCP_URL: http://mcp-server:9001
       CHROMA_HOST: vector-db
@@ -109,6 +111,7 @@ services:
       DB_NAME: vulnreport
       DB_USER: vulnapp
       DB_PASSWORD: vulnpass123
+      PATH4_FLAG: ${PATH4_FLAG}
 
 volumes:
   postgres-data:

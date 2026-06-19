@@ -8,7 +8,7 @@ def complete(prompt: str) -> str:
         response = requests.post(
             f"{settings.llm_url}/api/generate",
             json={"model": settings.llm_model, "prompt": prompt, "stream": False},
-            timeout=20,
+            timeout=settings.llm_timeout_seconds,
         )
         response.raise_for_status()
         data = response.json()
