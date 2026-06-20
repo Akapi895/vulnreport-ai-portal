@@ -40,10 +40,10 @@ services:
       CHROMA_COLLECTION: vulnreport_reports
       EMBEDDING_MODEL: nomic-embed-text
       LAB_MODE: "true"
-      ENABLE_VULN_NOTE_IDOR: "true"
-      ENABLE_VULN_FETCH_HEADER_FORWARD: "true"
-      ENABLE_VULN_MCP_SECRET_LEAK: "true"
-      ENABLE_VULN_RAG_POISONING: "true"
+      ENABLE_VULN_NOTE_IDOR: "false"
+      ENABLE_VULN_FETCH_HEADER_FORWARD: "false"
+      ENABLE_VULN_MCP_SECRET_LEAK: "false"
+      ENABLE_VULN_RAG_POISONING: "false"
       AUTO_SEED: "true"
     depends_on:
       postgres:
@@ -107,7 +107,7 @@ services:
     build: ./mcp-server
     environment:
       LAB_MODE: "true"
-      ENABLE_VULN_MCP_SECRET_LEAK: "true"
+      ENABLE_VULN_MCP_SECRET_LEAK: "false"
       DB_HOST: postgres
       DB_PORT: 5432
       DB_NAME: vulnreport
